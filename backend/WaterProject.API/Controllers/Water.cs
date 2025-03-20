@@ -19,13 +19,20 @@ public class WaterController : ControllerBase
    }
 
    [HttpGet("AllProjects")]
-   public IEnumerable<Project> GetProjects()
+   public IActionResult GetProjects(int pageHowMany = 10, int pageNum =1)
    {
       var somethings = _waterContext.Projects
-         .Take(5)
+         .Skip((pageNum - 1) * pageHowMany)
+         .Take(pageHowMany)
          .ToList();
       
-      return somethings;
+      var totalNumProjects = _waterContext.Projects.Count();
+      
+      return Ok(new 
+      {
+         Projects = somethings,
+         totalNumProjects = totalNumProjects
+      });
    }
 
    [HttpGet("FunctionalProjects")]
