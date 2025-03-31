@@ -50,4 +50,45 @@ public class WaterController : ControllerBase
          .ToList();
       return Ok(projectTypes);
    }
+
+   [HttpPost("AddProject")]
+   public IActionResult AddProject([FromBody] Project newProject)
+   {
+      _waterContext.Projects.Add(newProject);
+      _waterContext.SaveChanges();
+      return Ok(newProject);
+   }
+
+   [HttpPut("UpdateProject/{projectId}")]
+   public IActionResult UpdateProject(int projectId, [FromBody] Project updateProject)
+   {
+      var existingProject = _waterContext.Projects.Find(projectId);
+
+      existingProject.ProjectName = updateProject.ProjectName;
+      existingProject.ProjectType = updateProject.ProjectType;
+      existingProject.ProjectRegionalProgram = updateProject.ProjectRegionalProgram;
+      existingProject.ProjectImpact= updateProject.ProjectImpact;
+      existingProject.ProjectPhase= updateProject.ProjectPhase;
+      existingProject.ProjectFunctionalityStatus = updateProject.ProjectFunctionalityStatus;
+
+      _waterContext.Projects.Update(existingProject);
+      _waterContext.SaveChanges();
+
+      return Ok(existingProject);
+   }
+
+   [HttpDelete("DeleteProject/{projectId}")]
+   public IActionResult DeleteProject(int projectId) {
+      var project =_waterContext.Projects.Find(projectId);
+
+      if (project == null)
+      {
+         return NotFound (new {message = "project not found"});
+      };
+
+      _waterContext.Projects.Remove(project);
+      _waterContext.SaveChanges();
+
+      return NoContent();
+   }
 }
